@@ -7,16 +7,14 @@ __DATA__
 @@ moose_form.html.ep
 
 <form>
-   <% if($class) { =%>
-      <%= include "class_attr_iterator", class => $class =%>
+   <% if($attributes) { =%>
+      <%= include "class_attr_iterator", attributes => $attributes =%>
    <% } =%>
 </form>
 
 @@ class_attr_iterator.html.ep
-% my $meta = $class->meta;
-% my @attrs = $meta->get_all_attributes;
 <table>
-% for my $attr(@attrs) {
+% for my $attr(@$attributes) {
    <tr>
    %= include "attr_chooser", attr => $attr;
    </tr>
@@ -24,4 +22,4 @@ __DATA__
 </table>
 
 @@ attr_chooser.html.ep
-<td><%= $attr->name =%></td>
+<td><%= $attr->{ name } =%></td>

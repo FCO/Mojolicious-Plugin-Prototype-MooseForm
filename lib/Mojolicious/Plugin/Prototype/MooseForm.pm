@@ -1,6 +1,7 @@
 package Mojolicious::Plugin::Prototype::MooseForm;
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojolicious::Plugin::Prototype::MooseForm::ClassResolver;
+use Mojolicious::Plugin::Prototype::MooseForm::TemplateData;
 use v5.10;
 use Moose;
 use Carp;
@@ -13,6 +14,7 @@ has conf    => (is => 'rw', lazy => 1, isa => "HashRef", default => sub{{
 }});
 has plugins => (is => 'ro', lazy => 1, default => sub{ [] });
 has error   => (is => 'rw', isa => "HashRef");
+has app     => (is => 'rw');
 
 after error => sub {
    my $self = shift;
@@ -65,7 +67,8 @@ sub add_plugin {
    my $self   = shift;
    my $plugin = shift;
 
-   unshift @{ $self->plugins }, $plugin->new( $self->plugin_init )
+   unshift @{ $self->plugins }, $plugin->new( $self->plugin_init );
+   push @{ $self->app->renderer->classes }, $plugin if $self->app && $self->app->can("renderer");
 }
 
 sub register { 
@@ -73,14 +76,18 @@ sub register {
    my $app  = shift;
    my $conf = shift;
 
+   $self->app( $app ) ;
+
    $self->set_conf($conf);
    $self->add_plugin( "Mojolicious::Plugin::Prototype::MooseForm::ClassResolver" );
+   $self->add_plugin( "Mojolicious::Plugin::Prototype::MooseForm::TemplateData" );
+   my $pl_self = $self;
 
    $app->helper("get_defaults" => sub {
       my $self  = shift;
       my $class = shift;
-      my @defaults = $self->exec(get_class_details => $class);
-      $app->stash->{attributes} = [ @defaults ];
+      my @defaults = $pl_self->exec(get_class_details => $class);
+      $self->stash->{attributes} = [ @defaults ];
    });
 }
 
