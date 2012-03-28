@@ -119,6 +119,7 @@ sub register {
       $self->stash->{attributes} = [ @defaults ];
       $self->stash->{class}      = $class;
       $self->stash->{error}      = $self->flash("error");
+      $self->stash->{action}     = "";
       $self->flash(error => {})
    });
 
@@ -140,6 +141,41 @@ sub register {
       return $obj
    });
    $app->routes->get("/css/moose_form" => "moose_form");
+   $app->routes->add_shortcut("get_moose_form" => sub{
+      my $self  = shift;
+      my $url   = shift;
+      my $class = shift;
+
+      my $code   = ( grep{ref eq "CODE"} @_ )[ 0 ] ;
+      my $action = ( map{$_->{ action }} grep {ref eq "HASH" and exists $_->{action}} @_ )[ 0 ] ;
+
+      $self->get($url, sub{
+         my $self = shift;
+         $self->get_defaults($class);
+         $self->stash->{action} = $action if $action;
+         $self->$code(@_) if defined $code;
+      }, grep{ref ne "CODE"} @_);
+   });
+   $app->routes->add_shortcut("moose_form" => sub{
+      my $self  = shift;
+      my $url   = shift;
+      my $class = shift;
+
+      my $code   = ( grep{ref eq "CODE"} @_ )[ 0 ] ;
+      my $action = ( map{$_->{ action }} grep {ref eq "HASH" and exists $_->{action}} @_ )[ 0 ] ;
+      my ($pname, $gname) = reverse grep{not ref} @_;
+
+      $self->get_moose_form($url, $class, ( $gname || "moose_form" ) );
+      $self->post($url, sub{
+         my $self = shift;
+         $self->stash->{ obj } = $self->create_object($class);
+         $self->stash->{action} = $action;
+         $self->$code(@_) if defined $code;
+      }, $pname, grep{ref ne "CODE"} @_);
+   });
+
+   *main::get_moose_form = sub{$app->routes->get_moose_form(@_)};
+   *main::moose_form     = sub{$app->routes->moose_form(@_)};
 }
 
 42

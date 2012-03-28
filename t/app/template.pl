@@ -10,17 +10,24 @@ has u => (is => 'ro');
 package main;
 use Mojolicious::Lite;
 
-plugin "Mojolicious::Plugin::Prototype::MooseForm";
+BEGIN{ plugin "Mojolicious::Plugin::Prototype::MooseForm"; }
 
-get "/"  => sub{shift()->get_defaults("bla")} => "moose_form";
+#get "/"  => sub{shift()->get_defaults("bla")} => "moose_form";
 post "/" => sub{
    my $self = shift;
    my $obj = $self->create_object("bla");
-   return $self->redirect_to("") if not $obj;
+   return $self->redirect_to("/mf") if not $obj;
    $self->render_json({ %$obj });
 };
+
+get_moose_form "/mf" => bla => {action => "/"} => "moose_form";
+moose_form "/done" => "bla";
 
 app->start;
 
 __DATA__
 
+@@ done.html.ep
+% for my $key(sort keys %$obj) {
+  <%= "$key: " . $obj->{ $key } =%><br>
+%}
