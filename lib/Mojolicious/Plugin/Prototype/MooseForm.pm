@@ -119,6 +119,7 @@ sub register {
       $self->stash->{attributes} = [ @defaults ];
       $self->stash->{class}      = $class;
       $self->stash->{error}      = $self->flash("error");
+      $self->flash(error => {})
    });
 
    $app->helper("create_object" => sub {
@@ -128,9 +129,12 @@ sub register {
       $params->{$_} = $self->param($_) for $self->param;
 
       my $obj = $pl_self->exec(create_obj => $class, $params);
-      if(my $error = $pl_self->error) {
+      my $error = $pl_self->error;
+      if(keys %$error) {
+         for my $key(keys %$error) {
+            $app->log->debug("ERROR: " . $error->{ $key }) if $error->{ $key } ;
+         }
          $self->flash(error => $error);
-         $self->redirect_to("");
          return;
       }
       return $obj

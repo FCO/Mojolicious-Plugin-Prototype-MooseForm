@@ -16,7 +16,7 @@ get "/"  => sub{shift()->get_defaults("bla")} => "moose_form";
 post "/" => sub{
    my $self = shift;
    my $obj = $self->create_object("bla");
-   return if not $obj;
+   return $self->redirect_to("") if not $obj;
    $self->render_json({ %$obj });
 };
 
