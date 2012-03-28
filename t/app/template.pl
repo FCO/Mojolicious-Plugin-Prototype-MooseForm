@@ -2,7 +2,7 @@
 package bla;
 use Moose;
 has a => (is => 'ro', isa => "Num");
-has e => (is => 'ro');
+has e => (is => 'ro', default => "Bla");
 has i => (is => 'ro');
 has o => (is => 'ro');
 has u => (is => 'ro');

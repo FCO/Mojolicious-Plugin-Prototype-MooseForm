@@ -71,6 +71,15 @@ sub add_plugin {
    push @{ $self->app->renderer->classes }, $plugin if $self->app && $self->app->can("renderer");
 }
 
+sub create_template_name {
+      my $self   = shift;
+      my $action = lc shift;
+      my $type   = lc shift;
+      my $value  = lc shift;
+
+      "moose_form_template_${action}_${type}_${value}"
+}
+
 sub register { 
    my $self = shift;
    my $app  = shift;
@@ -83,24 +92,23 @@ sub register {
    $self->add_plugin( "Mojolicious::Plugin::Prototype::MooseForm::TemplateData" );
    my $pl_self = $self;
 
-   $app->helper("js_event_for" => sub {
-      my $self  = shift;
-      my $event = shift;
-      my $what  = shift;
-      my $value = lc shift;
-      my $controller = $self;
-      my $renderer   = $self->app->renderer;
-      $value = "default" unless $renderer->render($controller, { template => "js_${event}_for_${what}_${value}" });
-      "js_${event}_for_${what}_${value}"
+   $app->helper("moose_form_get_conf" => sub {
+      $pl_self->conf;
    });
 
-   $app->helper("template_for_type" => sub {
-      my $self = shift;
-      my $type = lc shift;
+   $app->helper("moose_form_template_for" => sub {
+      my $self   = shift;
+
       my $controller = $self;
       my $renderer   = $self->app->renderer;
-      $type = "default" unless $renderer->render($controller, { template => "template_for_type_$type" });
-      "template_for_type_$type"
+
+      my $name = $pl_self->create_template_name(@_);
+      return $name
+         if $renderer->render($controller, {
+            template => $name
+         });
+      my @other = ( @_[ 0 .. 1 ], "default" );
+      $pl_self->create_template_name(@other)
    });
 
    $app->helper("get_defaults" => sub {
@@ -110,6 +118,7 @@ sub register {
       $self->stash->{attributes} = [ @defaults ];
       $self->stash->{class}      = $class;
    });
+   $app->routes->get("/moose_form");
 }
 
 42
