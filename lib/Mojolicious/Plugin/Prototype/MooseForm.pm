@@ -83,11 +83,32 @@ sub register {
    $self->add_plugin( "Mojolicious::Plugin::Prototype::MooseForm::TemplateData" );
    my $pl_self = $self;
 
+   $app->helper("js_event_for" => sub {
+      my $self  = shift;
+      my $event = shift;
+      my $what  = shift;
+      my $value = lc shift;
+      my $controller = $self;
+      my $renderer   = $self->app->renderer;
+      $value = "default" unless $renderer->render($controller, { template => "js_${event}_for_${what}_${value}" });
+      "js_${event}_for_${what}_${value}"
+   });
+
+   $app->helper("template_for_type" => sub {
+      my $self = shift;
+      my $type = lc shift;
+      my $controller = $self;
+      my $renderer   = $self->app->renderer;
+      $type = "default" unless $renderer->render($controller, { template => "template_for_type_$type" });
+      "template_for_type_$type"
+   });
+
    $app->helper("get_defaults" => sub {
       my $self  = shift;
       my $class = shift;
       my @defaults = $pl_self->exec(get_class_details => $class);
       $self->stash->{attributes} = [ @defaults ];
+      $self->stash->{class}      = $class;
    });
 }
 
