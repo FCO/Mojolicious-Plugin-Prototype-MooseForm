@@ -4,7 +4,7 @@ use Moose;
 has a => (is => 'ro', isa => "Num");
 has e => (is => 'ro', default => "Bla");
 has i => (is => 'ro');
-has o => (is => 'ro');
+has o => (is => 'ro', required => 1);
 has u => (is => 'ro');
 
 package main;
@@ -21,6 +21,7 @@ post "/" => sub{
 };
 
 get_moose_form "/mf" => bla => {action => "/"} => "moose_form";
+
 moose_form "/done" => "bla";
 
 app->start;

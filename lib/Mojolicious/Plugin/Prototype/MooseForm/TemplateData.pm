@@ -4,6 +4,12 @@ use Moose;
 
 __DATA__
 
+@@ moose_form_template_say_required_default.html.ep
+<span class=required></span>
+
+@@ moose_form_template_say_required_1.html.ep
+<span class=required>*</span>
+
 @@ moose_form_template_change_type_default.html.ep
 <input
  class="attr_input type_<%= lc $attr->{ type } =%>"
@@ -11,6 +17,7 @@ __DATA__
  name="<%= $attr->{ name }  =%>"
  value="<%= $attr->{ value }  =%>"
 >
+<%= include moose_form_template_for( "say", "required", $attr->{ req } ), attr => $attr =%></td>
 
 @@ moose_form.html.ep
 <link rel="stylesheet" type="text/css" href="<%= url_for "/css/moose_form.css" =%>" />
@@ -58,7 +65,9 @@ __DATA__
 .moose_form_table {
   width: 100%;
 }
-
+.required {
+   color: red;
+}
 
 
 
