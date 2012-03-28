@@ -12,7 +12,13 @@ use Mojolicious::Lite;
 
 plugin "Mojolicious::Plugin::Prototype::MooseForm";
 
-get "/" => sub{shift()->get_defaults("bla")} => "moose_form";
+get "/"  => sub{shift()->get_defaults("bla")} => "moose_form";
+post "/" => sub{
+   my $self = shift;
+   my $obj = $self->create_object("bla");
+   return if not $obj;
+   $self->render_json({ %$obj });
+};
 
 app->start;
 

@@ -55,7 +55,7 @@ sub create_obj {
       $attrs{ $name } = $value;
       my $err;
       $err = $self->exec(attr_error => $attr, $value);
-      $error{ $name } = $err if defined $err;
+      $error{ $name } = $err if $err;
    }
    if(keys %error) {
       $self->plugin->error({ %error });
@@ -68,7 +68,8 @@ sub get_value_for_type {
    my $self = shift;
    my $type = shift;
 
-   return $self->exec("get_value_for_" . lc($type) => @_) if $self->can_exec;
+   my $name = "get_value_for_" . lc($type);
+   return $self->exec($name => @_) if $self->can_exec($name);
    $self->exec("get_value_for_default" => @_)
 }
 

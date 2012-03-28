@@ -11,6 +11,7 @@ our $VERSION = '0.01';
 has conf    => (is => 'rw', lazy => 1, isa => "HashRef", default => sub{{
    prototype_list_bgcolor => [ "#E6E6FA", "#FFFFFF" ],
    prototype_bgcolor      => "#EEEEEE",
+   prototype_submit_label => "OK",
 }});
 has plugins => (is => 'ro', lazy => 1, default => sub{ [] });
 has error   => (is => 'rw', isa => "HashRef");
@@ -117,6 +118,22 @@ sub register {
       my @defaults = $pl_self->exec(get_class_details => $class);
       $self->stash->{attributes} = [ @defaults ];
       $self->stash->{class}      = $class;
+      $self->stash->{error}      = $self->flash("error");
+   });
+
+   $app->helper("create_object" => sub {
+      my $self  = shift;
+      my $class = shift;
+      my $params = {};
+      $params->{$_} = $self->param($_) for $self->param;
+
+      my $obj = $pl_self->exec(create_obj => $class, $params);
+      if(my $error = $pl_self->error) {
+         $self->flash(error => $error);
+         $self->redirect_to("");
+         return;
+      }
+      return $obj
    });
    $app->routes->get("/moose_form");
 }

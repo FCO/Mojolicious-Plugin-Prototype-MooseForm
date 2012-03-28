@@ -15,7 +15,7 @@ __DATA__
 @@ moose_form.html.ep
 <link rel="stylesheet" type="text/css" href="<%= url_for "/moose_form.css" =%>" />
 <script src="<%= url_for "js/jquery.js" =%>"></script>
-<form class="moose_form_<%= $class =%>">
+<form class="moose_form_<%= $class =%>" method=POST>
    <% if($attributes) { =%>
       <%= include "moose_form_table", attributes => $attributes =%>
    <% } =%>
@@ -30,7 +30,16 @@ __DATA__
    %= include "moose_form_line", attr => $attr;
    </tr>
 % }
+   <tr class="bgcolor_<%= ( $counter++ % $num_of_colors ) + 1 %>">
+   %= include "moose_form_last_line";
+   </tr>
 </table>
+
+@@ moose_form_last_line.html.ep
+% my $value = moose_form_get_conf()->{prototype_submit_label};
+<td colspan=2 align=right>
+   <input type=submit value="<%= $value =%>"
+</td>
 
 @@ moose_form_line.html.ep
 <td><%= include moose_form_template_for( "title", "none", "bla" ), attr => $attr =%></td>
