@@ -17,7 +17,6 @@ __DATA__
  name="<%= $attr->{ name }  =%>"
  value="<%= $attr->{ value }  =%>"
 >
-<%= include moose_form_template_for( "say", "required", $attr->{ req } ), attr => $attr =%></td>
 
 @@ moose_form.html.ep
 <link rel="stylesheet" type="text/css" href="<%= url_for "/css/moose_form.css" =%>" />
@@ -50,7 +49,9 @@ __DATA__
 
 @@ moose_form_line.html.ep
 <td><%= include moose_form_template_for( "title", "none", "bla" ), attr => $attr =%></td>
-<td><%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => "default" =%></td>
+<td><%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => "default" =%>
+<%= include moose_form_template_for( "say", "required", $attr->{ req } ), attr => $attr =%></td>
+</td>
 
 @@ moose_form_template_title_none_default.html.ep
 <span class="attr_line_header"><%= $attr->{ name } =%></span>
