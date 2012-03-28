@@ -139,7 +139,7 @@ sub register {
       }
       return $obj
    });
-   $app->routes->get("/moose_form");
+   $app->routes->get("/css/moose_form" => "moose_form");
 }
 
 42

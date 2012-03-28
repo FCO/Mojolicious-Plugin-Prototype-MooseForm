@@ -13,7 +13,7 @@ __DATA__
 >
 
 @@ moose_form.html.ep
-<link rel="stylesheet" type="text/css" href="<%= url_for "/moose_form.css" =%>" />
+<link rel="stylesheet" type="text/css" href="<%= url_for "/css/moose_form.css" =%>" />
 <script src="<%= url_for "js/jquery.js" =%>"></script>
 <form class="moose_form_<%= $class =%>" method=POST action="?rand=<%= rand =%>">
    <% if($attributes) { =%>
