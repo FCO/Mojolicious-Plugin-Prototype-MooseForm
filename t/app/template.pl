@@ -12,8 +12,7 @@ use Mojolicious::Lite;
 
 plugin "Mojolicious::Plugin::Prototype::MooseForm";
 
-get "/1" => sub{shift()->stash->{class} = "bla"} => "moose_form";
-get "/2" => sub{shift()->get_defaults("bla")} => "moose_form";
+get "/" => sub{shift()->get_defaults("bla")} => "moose_form";
 
 app->start;
 
