@@ -169,6 +169,7 @@ sub register {
       $self->post($url, sub{
          my $self = shift;
          $self->stash->{ obj } = $self->create_object($class);
+         return $self->redirect_to("") if not $self->stash->{ obj };
          $self->stash->{action} = $action;
          $self->$code(@_) if defined $code;
       }, $pname, grep{ref ne "CODE"} @_);
