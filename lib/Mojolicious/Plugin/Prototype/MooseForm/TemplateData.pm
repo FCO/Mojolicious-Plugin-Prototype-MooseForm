@@ -10,13 +10,31 @@ __DATA__
 @@ moose_form_template_say_required_1.html.ep
 <span class=required>*</span>
 
+@@ moose_form_template_change_type_arrayref.html.ep
+% $$required = 0;
+% my $array_req = 1;
+<div class="array_item_base submit_remove">
+   <div class=item>
+      <%= include moose_form_template_for( "change", "type", $subtype ), attr => $attr, type => $subtype, required => \$array_req =%>
+      <%= include moose_form_template_for( "say", "required", $array_req ), attr => $attr =%>
+      <input class=remove count=0 type=button value="-"><br>
+   </div>
+</div>
+<div class=array_active>
+</div>
+<input class=add type=button value="+">
+
+@@ moose_form_template_change_type_any.html.ep
+% $$required = 0;
+<%= include "moose_form_template_change_type_default", attr => $attr, type => $subtype, required => $required =%>
+
 @@ moose_form_template_change_type_maybe.html.ep
 % $$required = 0;
-<%= include moose_form_template_for( "change", "type", $subtype ), attr => $attr, type => "default", required => $required =%>
+<%= include moose_form_template_for( "change", "type", $subtype ), attr => $attr, type => $subtype, required => $required =%>
 
 @@ moose_form_template_change_type_default.html.ep
 <input
- class="attr_input type_<%= join " ", lc $attr->{ type }, $$required ? "inp_required" : () =%>"
+ class="attr_input type_<%= join " ", lc($type ? $type : $attr->{ type }), $$required ? "inp_required" : () =%>"
  type="text"
  name="<%= $attr->{ name }  =%>"
  value="<%= $attr->{ value }  =%>"
@@ -58,22 +76,24 @@ __DATA__
    <%= include moose_form_template_for( "title", "none", "bla" ), attr => $attr =%>
 </td>
 <td>
-   <%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => "default", required => \$required =%>
+   <%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => $attr->{  type } , required => \$required =%>
    <%= include moose_form_template_for( "say", "required", $required ), attr => $attr =%>
-   <% if( $attr->{ doc } ) { =%>
-      <div
-       class=error_msg
-       <% if($error->{$attr->{name}}) { =%>
-          style="display: block;"
-       <% } =%>
-      >
+   <div
+    class=error_msg
+    <% if($error->{$attr->{name}}) { =%>
+       style="display: block;"
+    <% } =%>
+   >
+      <% if( $attr->{ doc } ) { =%>
          <%= $attr->{ doc } =%>
-         <% if($error->{$attr->{name}}) { =%>
-            <BR>
-            <strong>ERROR:</strong> <%= $error->{$attr->{name}} =%>
-         <% } =%>
+      <% } else { =%>
+         <%= moose_form_get_conf()->{prototype_default_error_msg} =%>
+      <% } =%>
+      <% if($error->{$attr->{name}}) { =%>
+         <BR>
+         <strong>ERROR:</strong> <%= $error->{$attr->{name}} =%>
+      <% } =%>
       </div>
-   <% } =%>
 </td>
 
 @@ moose_form_template_title_none_default.html.ep
@@ -125,6 +145,21 @@ $(document).ready(function(){
          this.gotwrong();
       else
          this.gotright();
+   });
+   var count = 0;
+   $(".add").click(function(){
+      count++;
+      var new_item = $(this).parents("td").find(".array_item_base div").clone();
+      $(new_item).find("input").attr(
+         "name", $(new_item).find("input").attr("name") + count
+      );
+      $(this).parents("td").find(".array_active").append( new_item );
+   });
+   $(".array_active input.remove").live("click", function(){
+      $(this).parents(".item").remove();
+   });
+   $("form.moose_form").submit(function(){
+      $(this).find(".submit_remove").remove();
    });
 });
 

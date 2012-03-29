@@ -17,6 +17,7 @@ has conf    => (is => 'rw', lazy => 1, isa => "HashRef", default => sub{{
    prototype_error_border_color  => "red",
    prototype_error_border_width  => "1px",
    prototype_input_error_color   => "red",
+   prototype_default_error_msg   => "ERROR: Value don't match the type",
 
 }});
 has plugins => (is => 'ro', lazy => 1, default => sub{ [] });

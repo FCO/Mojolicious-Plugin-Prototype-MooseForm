@@ -1,7 +1,7 @@
 #!/usr/bin/perl 
 package bla;
 use Moose;
-has a => (is => 'ro', isa => "Num", documentation => "Doc for attr 'a'");
+has a => (is => 'ro', isa => "Num");
 has e => (is => 'ro', default => "Bla");
 has i => (is => 'ro', isa => "ArrayRef[Str]", documentation => "Doc for attr 'i'");
 has o => (is => 'ro', required => 1);
@@ -29,6 +29,9 @@ app->start;
 __DATA__
 
 @@ done.html.ep
+% use Data::Dumper;
+<pre>
 % for my $key(sort keys %$obj) {
-  <%= "$key: " . $obj->{ $key } =%><br>
+  <%= "$key: " . Dumper $obj->{ $key } =%><br>
 %}
+</pre>

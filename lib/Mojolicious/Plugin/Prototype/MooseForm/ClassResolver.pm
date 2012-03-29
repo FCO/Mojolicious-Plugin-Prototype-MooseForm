@@ -93,11 +93,24 @@ sub get_value_for_type {
 sub get_value_for_arrayref {
    my $self = shift;
    my $type = shift;
-   [ $self->get_value_for_type($type, @_) ]
+   my $name = shift;
+
+   my @ret;
+   my $count = 1;
+   my $new_name = $name . $count++;
+   while(defined ( my $val = $self->get_value_for_type($type, $new_name, @_) )) { 
+      push @ret, $val;
+      $new_name = $name . $count++;
+   }
+   [ @ret ]
 }
-sub get_value_for_num   {shift()->get_value_for_default(@_)}
-sub get_value_for_str   {shift()->get_value_for_default(@_)}
-sub get_value_for_any   {shift()->get_value_for_default(@_)}
+sub get_value_for_maybe {
+   my $self = shift;
+   $self->get_value_for_type(@_) || undef
+}
+sub get_value_for_num   {shift()->get_value_for_default(@_) || undef}
+sub get_value_for_str   {shift()->get_value_for_default(@_) || undef}
+sub get_value_for_any   {shift()->get_value_for_default(@_) || undef}
 
 sub get_value_for_default {
    my $self = shift;
