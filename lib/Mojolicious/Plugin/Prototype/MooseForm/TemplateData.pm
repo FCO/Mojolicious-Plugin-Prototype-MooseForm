@@ -16,7 +16,7 @@ __DATA__
 
 @@ moose_form_template_change_type_default.html.ep
 <input
- class="attr_input type_<%= lc $attr->{ type } =%>"
+ class="attr_input type_<%= join " ", lc $attr->{ type }, $$required ? "inp_required" : () =%>"
  type="text"
  name="<%= $attr->{ name }  =%>"
  value="<%= $attr->{ value }  =%>"
@@ -25,6 +25,7 @@ __DATA__
 @@ moose_form.html.ep
 <link rel="stylesheet" type="text/css" href="<%= url_for "/css/moose_form.css" =%>" />
 <script src="<%= url_for "js/jquery.js" =%>"></script>
+<script src="<%= url_for "js/main.js" =%>"></script>
 <form class="moose_form_<%= $class =%>" method=POST action="<%= $action =%>?rand=<%= rand =%>">
    <% if($attributes) { =%>
       <%= include "moose_form_table", attributes => $attributes =%>
@@ -69,7 +70,7 @@ __DATA__
          <%= $attr->{ doc } =%>
          <% if($error->{$attr->{name}}) { =%>
             <BR>
-            <%= $error->{$attr->{name}} =%>
+            <strong>ERROR:</strong> <%= $error->{$attr->{name}} =%>
          <% } =%>
       </div>
    <% } =%>
@@ -101,5 +102,34 @@ __DATA__
    padding: 3px;
    display: none;
 }
+input.input_error {
+   color: <%= $conf->{ prototype_input_error_color } =%>; 
+}
+
+@@ js/main.js
+
+$(document).ready(function(){
+   $(".attr_input").each(function(){
+      this.gotwrong = function(){ 
+         $(this).parents("td").find(".error_msg").show("slow");
+         $(this).focus();
+         $(this).addClass("input_error");
+      };
+      this.gotright = function(){ 
+         $(this).parents("td").find(".error_msg").hide("slow");
+         $(this).removeClass("input_error");
+      };
+   });
+   $(".type_num").change(function(){
+      if(!$(this).val().match(/^[+-]?\d*(?:.\d+)?$/))
+         this.gotwrong();
+      else
+         this.gotright();
+   });
+});
+
+
+
+
 
 

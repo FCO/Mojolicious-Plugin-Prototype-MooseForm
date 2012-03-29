@@ -16,6 +16,7 @@ has conf    => (is => 'rw', lazy => 1, isa => "HashRef", default => sub{{
    prototype_error_bgcolor       => "#ffaaaa",
    prototype_error_border_color  => "red",
    prototype_error_border_width  => "1px",
+   prototype_input_error_color   => "red",
 
 }});
 has plugins => (is => 'ro', lazy => 1, default => sub{ [] });
@@ -75,6 +76,7 @@ sub add_plugin {
 
    unshift @{ $self->plugins }, $plugin->new( $self->plugin_init );
    push @{ $self->app->renderer->classes }, $plugin if $self->app && $self->app->can("renderer");
+   push @{ $self->app->static->classes }, $plugin if $self->app && $self->app->can("renderer");
 }
 
 sub separate_value {
@@ -186,7 +188,6 @@ sub register {
       }
       return $obj
    });
-   $app->routes->get("/css/moose_form" => "moose_form");
    $app->routes->add_shortcut("get_moose_form" => sub{
       my $self  = shift;
       my $url   = shift;
@@ -223,6 +224,8 @@ sub register {
 
    *main::get_moose_form = sub{$app->routes->get_moose_form(@_)};
    *main::moose_form     = sub{$app->routes->moose_form(@_)};
+
+   $app->routes->get("/css/moose_form" => "moose_form");
 }
 
 42
