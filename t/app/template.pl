@@ -1,11 +1,11 @@
 #!/usr/bin/perl 
 package bla;
 use Moose;
-has a => (is => 'ro', isa => "Num");
+has a => (is => 'ro', isa => "Num", documentation => "Doc for attr 'a'");
 has e => (is => 'ro', default => "Bla");
-has i => (is => 'ro', isa => "ArrayRef[Str]");
+has i => (is => 'ro', isa => "ArrayRef[Str]", documentation => "Doc for attr 'i'");
 has o => (is => 'ro', required => 1);
-has u => (is => 'ro', isa => "Maybe[Num]");
+has u => (is => 'ro', isa => "Maybe[Num]", documentation => "Doc for attr 'u'");
 
 package main;
 use Mojolicious::Lite;

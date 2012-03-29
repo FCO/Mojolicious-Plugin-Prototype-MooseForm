@@ -53,16 +53,34 @@ __DATA__
 
 @@ moose_form_line.html.ep
 % my $required = 1;
-<td><%= include moose_form_template_for( "title", "none", "bla" ), attr => $attr =%></td>
-<td><%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => "default", required => \$required =%>
-<%= include moose_form_template_for( "say", "required", $required ), attr => $attr =%></td>
+<td>
+   <%= include moose_form_template_for( "title", "none", "bla" ), attr => $attr =%>
+</td>
+<td>
+   <%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => "default", required => \$required =%>
+   <%= include moose_form_template_for( "say", "required", $required ), attr => $attr =%>
+   <% if( $attr->{ doc } ) { =%>
+      <div
+       class=error_msg
+       <% if($error->{$attr->{name}}) { =%>
+          style="display: block;"
+       <% } =%>
+      >
+         <%= $attr->{ doc } =%>
+         <% if($error->{$attr->{name}}) { =%>
+            <BR>
+            <%= $error->{$attr->{name}} =%>
+         <% } =%>
+      </div>
+   <% } =%>
 </td>
 
 @@ moose_form_template_title_none_default.html.ep
 <span class="attr_line_header"><%= $attr->{ name } =%></span>
 
 @@ moose_form.css.ep
-% my @colors = @{ moose_form_get_conf()->{prototype_list_bgcolor} };
+% my $conf = moose_form_get_conf();
+% my @colors = @{ $conf->{prototype_list_bgcolor} };
 % for( my $index = 0; $index < @colors; $index++) { 
 .bgcolor_<%= $index + 1 =%> {
    background-color: <%= $colors[ $index ] =%>;
@@ -72,8 +90,16 @@ __DATA__
   width: 100%;
 }
 .required {
-   color: red;
+   color: <%= $conf->{ prototype_required_color } =%>;
 }
-
+.error_msg {
+   border:
+      <%= $conf->{ prototype_error_border_width } =%>
+      solid
+      <%= $conf->{ prototype_error_border_color } =%>;
+   background-color: <%= $conf->{ prototype_error_bgcolor } =%>;
+   padding: 3px;
+   display: none;
+}
 
 

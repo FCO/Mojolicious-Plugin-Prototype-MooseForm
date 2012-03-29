@@ -9,9 +9,14 @@ use Carp;
 our $VERSION = '0.01';
 
 has conf    => (is => 'rw', lazy => 1, isa => "HashRef", default => sub{{
-   prototype_list_bgcolor => [ "#E6E6FA", "#FFFFFF" ],
-   prototype_bgcolor      => "#EEEEEE",
-   prototype_submit_label => "OK",
+   prototype_list_bgcolor        => [ "#E6E6FA", "#FFFFFF" ],
+   prototype_bgcolor             => "#EEEEEE",
+   prototype_submit_label        => "OK",
+   prototype_required_color      => "red",
+   prototype_error_bgcolor       => "#ffaaaa",
+   prototype_error_border_color  => "red",
+   prototype_error_border_width  => "1px",
+
 }});
 has plugins => (is => 'ro', lazy => 1, default => sub{ [] });
 has error   => (is => 'rw', isa => "HashRef");
