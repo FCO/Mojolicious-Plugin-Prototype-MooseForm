@@ -6,15 +6,19 @@ has plugin => (is => 'ro', required => 1, handles => [qw/exec can_exec/]);
 has conf   => (is => 'ro', required => 1);
 
 sub get_class_details {
-   my $self  = shift;
-   my $class = shift;
+   my $self   = shift;
+   my $class  = shift;
+   my $params = shift || {};
    
    my $meta = $class->meta;
 
    map {
-      my $val = $_->is_default_a_coderef
-                ? $_->default->($class)
-                : $_->default;
+      my $oval = $params->{$_->name}; 
+      my $val = $oval
+                ? $oval
+                : $_->is_default_a_coderef
+                  ? $_->default->($class)
+                  : $_->default;
       {
          title => join(" ", map{ "\u$_" } split /_+/, $_->name),
          name  => $_->name,
@@ -64,21 +68,40 @@ sub create_obj {
    }
 }
 
-sub get_value_for_type {
+sub create_exec_name {
    my $self = shift;
-   my $type = shift;
+   my $type = join "_of_", map{ lc $_ } @_;
 
-   my $name = "get_value_for_" . lc($type);
-   return $self->exec($name => @_) if $self->can_exec($name);
-   $self->exec("get_value_for_default" => @_)
+
+   "get_value_for_" . $type;
 }
 
-sub get_value_for_num {shift()->get_value_for_default(@_)}
-sub get_value_for_str {shift()->get_value_for_default(@_)}
-sub get_value_for_any {shift()->get_value_for_default(@_)}
+sub get_value_for_type {
+   my $self = shift;
+   my $type = lc shift;
+
+   my @ret;
+   my @val = $self->exec( separate_value => $type);
+   for( reverse 0 .. $#val ) {
+      my $name = $self->create_exec_name(@val[ 0 .. $_ ]);
+      my $subtype = $self->exec(type_reconstruct => @val[ $_ + 1 .. $#val ]);
+      return $self->exec($name => $subtype, @_) if $self->can_exec($name);
+   }
+   return $self->exec("get_value_for_default" => $type, @_);
+}
+
+sub get_value_for_arrayref {
+   my $self = shift;
+   my $type = shift;
+   [ $self->get_value_for_type($type, @_) ]
+}
+sub get_value_for_num   {shift()->get_value_for_default(@_)}
+sub get_value_for_str   {shift()->get_value_for_default(@_)}
+sub get_value_for_any   {shift()->get_value_for_default(@_)}
 
 sub get_value_for_default {
    my $self = shift;
+   my $type = shift;
    my $name = shift;
    my $data = shift;
 

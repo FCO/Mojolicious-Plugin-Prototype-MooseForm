@@ -3,9 +3,9 @@ package bla;
 use Moose;
 has a => (is => 'ro', isa => "Num");
 has e => (is => 'ro', default => "Bla");
-has i => (is => 'ro');
+has i => (is => 'ro', isa => "ArrayRef[Str]");
 has o => (is => 'ro', required => 1);
-has u => (is => 'ro');
+has u => (is => 'ro', isa => "Maybe[Num]");
 
 package main;
 use Mojolicious::Lite;

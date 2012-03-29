@@ -10,6 +10,10 @@ __DATA__
 @@ moose_form_template_say_required_1.html.ep
 <span class=required>*</span>
 
+@@ moose_form_template_change_type_maybe.html.ep
+% $$required = 0;
+<%= include moose_form_template_for( "change", "type", $subtype ), attr => $attr, type => "default", required => $required =%>
+
 @@ moose_form_template_change_type_default.html.ep
 <input
  class="attr_input type_<%= lc $attr->{ type } =%>"
@@ -48,9 +52,10 @@ __DATA__
 </td>
 
 @@ moose_form_line.html.ep
+% my $required = 1;
 <td><%= include moose_form_template_for( "title", "none", "bla" ), attr => $attr =%></td>
-<td><%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => "default" =%>
-<%= include moose_form_template_for( "say", "required", $attr->{ req } ), attr => $attr =%></td>
+<td><%= include moose_form_template_for( "change", "type", $attr->{ type } ), attr => $attr, type => "default", required => \$required =%>
+<%= include moose_form_template_for( "say", "required", $required ), attr => $attr =%></td>
 </td>
 
 @@ moose_form_template_title_none_default.html.ep

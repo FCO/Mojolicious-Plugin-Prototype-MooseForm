@@ -72,13 +72,43 @@ sub add_plugin {
    push @{ $self->app->renderer->classes }, $plugin if $self->app && $self->app->can("renderer");
 }
 
+sub separate_value {
+   my $self  = shift;
+   my $value = shift;
+
+   return "none" if not defined $value;
+
+   my @ret;
+   if($value =~ /^\s*(\w+)\s*\[\s*(.*?)\s*\]\s*$/) {
+      push @ret, $1, $self->separate_value( $2 );
+   } else {
+      push @ret, $value;
+   }
+   @ret
+}
+
 sub create_template_name {
       my $self   = shift;
       my $action = lc shift;
       my $type   = lc shift;
-      my $value  = lc shift;
+      my $value  = join "_of_", map { lc $_ } @_;
 
+      #$self->app->log->debug("***** TESTING: moose_form_template_${action}_${type}_${value}");
       "moose_form_template_${action}_${type}_${value}"
+}
+
+sub type_reconstruct {
+   my $self  = shift;
+   my $first = shift;
+
+   my $ret;
+   if( not $first ) {
+   } elsif( not @_ ) {
+      $ret = $first;
+   } else {
+      $ret = "$first\[" . $self->type_reconstruct(@_) . "]"
+   }
+   $ret
 }
 
 sub register { 
@@ -99,23 +129,33 @@ sub register {
 
    $app->helper("moose_form_template_for" => sub {
       my $self   = shift;
+      my $action = lc shift;
+      my $type   = lc shift;
+      my $value  = lc shift;
 
       my $controller = $self;
       my $renderer   = $self->app->renderer;
 
-      my $name = $pl_self->create_template_name(@_);
-      return $name
-         if $renderer->render($controller, {
-            template => $name
-         });
-      my @other = ( @_[ 0 .. 1 ], "default" );
-      $pl_self->create_template_name(@other)
+      my @val = $pl_self->separate_value($value);
+      my @ret;
+      for(reverse 0 .. $#val) { 
+         my $name = $pl_self->create_template_name($action, $type, @val[ 0 .. $_ ]);
+         if(eval { $renderer->render($controller, { template => $name, subtype => $pl_self->type_reconstruct( @val[ $_ + 1 .. $#val ] ) }) } or $@) { 
+            push @ret, $name, subtype => $pl_self->type_reconstruct(@val[ $_ + 1 .. $#val ] );
+            last;
+         }
+      }
+      if( not @ret ) {
+         my @other = ( $action, $type, "default" );
+         push @ret, $pl_self->create_template_name(@other), subtype => undef
+      }
+      @ret
    });
 
    $app->helper("get_defaults" => sub {
       my $self  = shift;
       my $class = shift;
-      my @defaults = $pl_self->exec(get_class_details => $class);
+      my @defaults = $pl_self->exec(get_class_details => $class, $self->flash("params"));
       $self->stash->{attributes} = [ @defaults ];
       $self->stash->{class}      = $class;
       $self->stash->{error}      = $self->flash("error");
@@ -132,6 +172,7 @@ sub register {
       my $obj = $pl_self->exec(create_obj => $class, $params);
       my $error = $pl_self->error;
       if(keys %$error) {
+         $self->flash(params => $params);
          for my $key(keys %$error) {
             $app->log->debug("ERROR: " . $error->{ $key }) if $error->{ $key } ;
          }
