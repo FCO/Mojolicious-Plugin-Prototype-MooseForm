@@ -22,9 +22,11 @@ __DATA__
 </div>
 <div class=array_active>
    % my $counter = 0;
+   % my $orig_name = $attr->{ name };
    % for my $val(@{ $attr->{ value } }) {
       % $counter++;
       % $attr->{ value } = $val;
+      % $attr->{ name } = $orig_name . $counter;
       <%= include moose_form_template_for( "change", "type", $subtype ), attr => $attr, type => $subtype, required => \$array_req =%>
       <%= include moose_form_template_for( "say", "required", $array_req ), attr => $attr =%>
       <input class=remove type=button value="-"><br>
@@ -171,16 +173,25 @@ $(document).ready(function(){
       this.array_test.push(function(obj){return $(obj).val() != ""});
    });
    $(".add").click(function(){
-      //count++;
       $(this).attr("count", parseInt($(this).attr("count")) + 1);
       var new_item = $(this).parents("td").find(".array_item_base div").clone();
+      new_item.hide();
       $(new_item).find("input").attr(
          "name", $(new_item).find("input").attr("name") + $(this).attr("count")
       );
       $(this).parents("td").find(".array_active").append( new_item );
+      new_item.show("slow");
    });
    $(".array_active input.remove").live("click", function(){
-      $(this).parents(".item").remove();
+      var iname = $(this).parents(".item").find(".attr_input").attr("name");
+      $(this).parents(".item").hide( "slow", function(){ $(this).remove() });
+
+      $(this).parents(".item").nextAll(".item").each(function(){
+console.log(iname);
+         var tmpname = $(this).find(".attr_input").attr("name");
+         $(this).find("attr_input").attr("name", iname);
+         iname = tmpname;
+      });
    });
    $("form.moose_form").submit(function(){
       $(this).find(".submit_remove").remove();
