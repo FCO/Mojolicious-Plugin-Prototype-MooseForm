@@ -63,6 +63,7 @@ sub create_obj {
    }
    if(keys %error) {
       $self->plugin->error({ %error });
+      return { %attrs }
    } else {
       return $class->new({ %attrs });
    }
@@ -80,14 +81,15 @@ sub get_value_for_type {
    my $self = shift;
    my $type = lc shift;
 
-   my @ret;
+   my $ret;
    my @val = $self->exec( separate_value => $type);
    for( reverse 0 .. $#val ) {
       my $name = $self->create_exec_name(@val[ 0 .. $_ ]);
       my $subtype = $self->exec(type_reconstruct => @val[ $_ + 1 .. $#val ]);
-      return $self->exec($name => $subtype, @_) if $self->can_exec($name);
+      $ret = $self->exec($name => $subtype, @_) if $self->can_exec($name);
    }
-   return $self->exec("get_value_for_default" => $type, @_);
+   $ret = $self->exec("get_value_for_default" => $type, @_) if not defined $ret;
+   $ret
 }
 
 sub get_value_for_arrayref {

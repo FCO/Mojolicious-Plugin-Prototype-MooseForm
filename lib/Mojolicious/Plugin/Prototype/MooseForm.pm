@@ -4,7 +4,7 @@ use Mojolicious::Plugin::Prototype::MooseForm::ClassResolver;
 use Mojolicious::Plugin::Prototype::MooseForm::TemplateData;
 use v5.10;
 use Moose;
-use Carp;
+use Carp qw/croak/;
 
 our $VERSION = '0.01';
 
@@ -65,10 +65,14 @@ sub exec {
    my $plugins = $self->plugins;
 
    for my $plug(@$plugins) {
-      return $plug->$exec(@_) if $plug->can($exec)
+      if($plug->can($exec)) {
+         return $plug->$exec(@_);
+      }
    }
-   return $self->$exec(@_) if $self->can($exec);
-   croak "Can not find '$exec' on plugins.";
+   if( $self->can($exec) ) {
+      return $self->$exec(@_);
+   }
+   croak "Can not find '$exec' on plugins."
 }
 
 sub add_plugin {
@@ -180,7 +184,7 @@ sub register {
       my $obj = $pl_self->exec(create_obj => $class, $params);
       my $error = $pl_self->error;
       if(keys %$error) {
-         $self->flash(params => $params);
+         $self->flash(params => $obj);
          for my $key(keys %$error) {
             $app->log->debug("ERROR: " . $error->{ $key }) if $error->{ $key } ;
          }
@@ -200,6 +204,7 @@ sub register {
       $self->get($url, sub{
          my $self = shift;
          $self->get_defaults($class);
+      use Data::Dumper; print Dumper $self->stash->{attributes};
          $self->stash->{action} = $action if $action;
          $self->$code(@_) if defined $code;
       }, grep{ref ne "CODE"} @_);

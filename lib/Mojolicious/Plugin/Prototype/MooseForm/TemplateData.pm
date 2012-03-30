@@ -25,7 +25,8 @@ __DATA__
       % $attr->{ value } = $val;
    % }
 </div>
-<input class=add type=button value="+" count="<%= scalar @{ $attr->{value} || [] } %>">
+
+<input class=add type=button value="+" count="<% scalar @{ $attr->{value} } if ref $attr->{value} eq "ARRAY"; =%>">
 
 @@ moose_form_template_change_type_any.html.ep
 % $$required = 0;
@@ -135,6 +136,7 @@ div.array_item_base {
 @@ js/main.js
 
 $(document).ready(function(){
+   $(".array_item_base input[type!='button']").val( "" );
    $(".attr_input").each(function(){
       this.array_test = [];
       this.gotwrong = function(){ 
