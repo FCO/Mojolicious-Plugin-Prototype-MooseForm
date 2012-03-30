@@ -21,12 +21,17 @@ __DATA__
    </div>
 </div>
 <div class=array_active>
+   % my $counter = 0;
    % for my $val(@{ $attr->{ value } }) {
+      % $counter++;
       % $attr->{ value } = $val;
+      <%= include moose_form_template_for( "change", "type", $subtype ), attr => $attr, type => $subtype, required => \$array_req =%>
+      <%= include moose_form_template_for( "say", "required", $array_req ), attr => $attr =%>
+      <input class=remove type=button value="-"><br>
    % }
 </div>
 
-<input class=add type=button value="+" count="<% scalar @{ $attr->{value} } if ref $attr->{value} eq "ARRAY"; =%>">
+<input class=add type=button value="+" count="<%= $counter =%>">
 
 @@ moose_form_template_change_type_any.html.ep
 % $$required = 0;

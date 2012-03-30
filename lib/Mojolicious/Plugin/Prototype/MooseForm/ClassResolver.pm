@@ -20,11 +20,11 @@ sub get_class_details {
                   ? $_->default->($class)
                   : $_->default;
       {
-         title => join(" ", map{ "\u$_" } split /_+/, $_->name),
+         title => join(" ", map{ "\u$_" } grep {defined $_} split /_+/, $_->name),
          name  => $_->name,
          value => $val,
          doc   => $_->documentation,
-         type  => $_->type_constraint || "Any",
+         type  => $_->type_constraint ? $_->type_constraint . "" : "Any",
          req   => $_->is_required,
       }
    } $meta->get_all_attributes
@@ -35,6 +35,7 @@ sub attr_error {
    my $attr  = shift;
    my $value = shift;
 
+use Data::Dumper; print "ATTR: ",$attr->name, ", VALUE: ", Dumper $value;
    eval{ $attr->verify_against_type_constraint($value) };
    if($@){
       return $1 if (split /\n/, $@)[0] =~ m{^\s*(.+)\s+at\s+.*/\w+\.pm\s+line\s+\d+\s*$};
@@ -55,6 +56,7 @@ sub create_obj {
       my $type  = $attr->type_constraint || "Any";
 
       my $value = $self->exec(get_value_for_type => $type, $name, $data);
+      print Dumper $value;
 
       $attrs{ $name } = $value;
       my $err;
