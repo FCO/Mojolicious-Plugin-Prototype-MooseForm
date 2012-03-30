@@ -94,11 +94,13 @@ sub get_value_for_arrayref {
    my $self = shift;
    my $type = shift;
    my $name = shift;
+   my $data = shift;
 
    my @ret;
    my $count = 1;
    my $new_name = $name . $count++;
-   while(defined ( my $val = $self->get_value_for_type($type, $new_name, @_) )) { 
+   while( exists $data->{ $new_name } ) { 
+      my $val = $self->get_value_for_type($type, $new_name, $data, @_);
       push @ret, $val;
       $new_name = $name . $count++;
    }

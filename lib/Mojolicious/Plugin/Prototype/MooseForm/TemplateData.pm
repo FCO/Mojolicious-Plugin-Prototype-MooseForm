@@ -17,12 +17,15 @@ __DATA__
    <div class=item>
       <%= include moose_form_template_for( "change", "type", $subtype ), attr => $attr, type => $subtype, required => \$array_req =%>
       <%= include moose_form_template_for( "say", "required", $array_req ), attr => $attr =%>
-      <input class=remove count=0 type=button value="-"><br>
+      <input class=remove type=button value="-"><br>
    </div>
 </div>
 <div class=array_active>
+   % for my $val(@{ $attr->{ value } }) {
+      % $attr->{ value } = $val;
+   % }
 </div>
-<input class=add type=button value="+">
+<input class=add type=button value="+" count="<%= scalar @{ $attr->{value} || [] } %>">
 
 @@ moose_form_template_change_type_any.html.ep
 % $$required = 0;
@@ -125,11 +128,15 @@ __DATA__
 input.input_error {
    color: <%= $conf->{ prototype_input_error_color } =%>; 
 }
+div.array_item_base {
+   display: none;
+}
 
 @@ js/main.js
 
 $(document).ready(function(){
    $(".attr_input").each(function(){
+      this.array_test = [];
       this.gotwrong = function(){ 
          $(this).parents("td").find(".error_msg").show("slow");
          $(this).focus();
@@ -140,18 +147,28 @@ $(document).ready(function(){
          $(this).removeClass("input_error");
       };
    });
-   $(".type_num").change(function(){
-      if(!$(this).val().match(/^[+-]?\d*(?:.\d+)?$/))
-         this.gotwrong();
-      else
+   $(".attr_input").change(function(){
+      var array_test = this.array_test;
+      var resp = true;
+      for(var i = 0; i < array_test.length; i++)
+         resp = resp && array_test[i](this);
+      if(resp)
          this.gotright();
+      else
+         this.gotwrong();
    });
-   var count = 0;
+   $(".type_num").each(function(){
+      this.array_test.push(function(obj){return $(obj).val().match(/^[+-]?\d*(?:.\d+)?$/)});
+   });
+   $(".inp_required").each(function(){
+      this.array_test.push(function(obj){return $(obj).val() != ""});
+   });
    $(".add").click(function(){
-      count++;
+      //count++;
+      $(this).attr("count", parseInt($(this).attr("count")) + 1);
       var new_item = $(this).parents("td").find(".array_item_base div").clone();
       $(new_item).find("input").attr(
-         "name", $(new_item).find("input").attr("name") + count
+         "name", $(new_item).find("input").attr("name") + $(this).attr("count")
       );
       $(this).parents("td").find(".array_active").append( new_item );
    });
