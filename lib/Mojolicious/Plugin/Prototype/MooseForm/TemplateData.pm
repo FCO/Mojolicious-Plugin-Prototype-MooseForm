@@ -47,7 +47,7 @@ __DATA__
 
 @@ moose_form_template_change_type_default.html.ep
 <input
- class="attr_input type_<%= join " ", lc($type ? $type : $attr->{ type }), $$required ? "inp_required" : () =%>"
+ class="attr_input type_<%= join " ", lc($type ? $type : $attr->{ type }), ($$required ? "inp_required" : ()), (exists $error->{$attr->{name}} ? "input_error" : ()) =%>"
  type="text"
  name="<%= $attr->{ name }  =%>"
  value="<%= $attr->{ value }  =%>"
@@ -146,6 +146,9 @@ div.array_item_base {
 
 $(document).ready(function(){
    $(".array_item_base input[type!='button']").val( "" );
+   $(".attr_input:text").focus(function(){
+      $(this).select();
+   });
    $(".attr_input").each(function(){
       this.array_test = [];
       this.gotwrong = function(){ 
