@@ -8,7 +8,7 @@ __DATA__
 <span class=required></span>
 
 @@ moose_form_template_say_required_1.html.ep
-<span class=required>*</span>
+<span class=required><%= moose_form_get_conf()->{template_required_symbol} =%></span>
 
 @@ moose_form_template_change_type_arrayref.html.ep
 % $$required = 0;
