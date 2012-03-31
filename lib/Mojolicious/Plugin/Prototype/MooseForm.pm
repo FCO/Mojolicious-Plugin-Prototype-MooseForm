@@ -136,6 +136,18 @@ sub register {
    $self->add_plugin( "Mojolicious::Plugin::Prototype::MooseForm::TemplateData" );
    my $pl_self = $self;
 
+   $app->helper(prototype_conf => sub{
+      my $self = shift;
+      my $key  = shift;
+
+      $key = "prototype_" . $key unless $key =~ s/^\+//;
+      if(@_) {
+         $pl_self->conf->{$key} = shift;
+      } else {
+         return $pl_self->conf->{$key};
+      }
+   });
+
    $app->helper("moose_form_get_conf" => sub {
       $pl_self->conf;
    });
@@ -205,7 +217,6 @@ sub register {
       $self->get($url, sub{
          my $self = shift;
          $self->get_defaults($class);
-      use Data::Dumper; print Dumper $self->stash->{attributes};
          $self->stash->{action} = $action if $action;
          $self->$code(@_) if defined $code;
       }, grep{ref ne "CODE"} @_);

@@ -12,6 +12,8 @@ use Mojolicious::Lite;
 
 BEGIN{ plugin "Mojolicious::Plugin::Prototype::MooseForm"; }
 
+app->prototype_conf("required_symbol" => "<b>Obrigat&oacute;rio</b>");
+
 #get "/"  => sub{shift()->get_defaults("bla")} => "moose_form";
 post "/" => sub{
    my $self = shift;
