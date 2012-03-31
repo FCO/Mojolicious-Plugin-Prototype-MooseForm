@@ -13,7 +13,7 @@ has conf    => (is => 'rw', lazy => 1, isa => "HashRef", default => sub{{
    prototype_bgcolor             => "#EEEEEE",
    prototype_submit_label        => "OK",
    prototype_required_color      => "red",
-   template_required_symbol      => "*",
+   prototype_required_symbol     => "*",
    prototype_error_bgcolor       => "#ffaaaa",
    prototype_error_border_color  => "red",
    prototype_error_border_width  => "1px",
