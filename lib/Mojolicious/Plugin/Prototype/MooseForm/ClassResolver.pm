@@ -89,7 +89,7 @@ sub get_value_for_type {
       $ret = $self->exec($name => $subtype, @_) if $self->can_exec($name);
    }
    $ret = $self->exec("get_value_for_default" => $type, @_) if not defined $ret;
-   $ret
+   $ret || undef
 }
 
 sub get_value_for_arrayref {
@@ -110,7 +110,7 @@ sub get_value_for_arrayref {
 }
 sub get_value_for_maybe {
    my $self = shift;
-   $self->get_value_for_type(@_) || undef
+   return $self->get_value_for_type(@_) || undef
 }
 sub get_value_for_num   {shift()->get_value_for_default(@_) || undef}
 sub get_value_for_str   {shift()->get_value_for_default(@_) || undef}
