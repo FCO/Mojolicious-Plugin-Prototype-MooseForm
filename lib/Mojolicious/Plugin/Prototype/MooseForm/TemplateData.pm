@@ -110,7 +110,7 @@ __DATA__
 </td>
 
 @@ moose_form_template_title_none_default.html.ep
-<span class="attr_line_header"><%= $attr->{ name } =%></span>
+<span class="attr_line_header"><%= $attr->{ title } =%></span>
 
 @@ moose_form.css.ep
 % my $conf = moose_form_get_conf();

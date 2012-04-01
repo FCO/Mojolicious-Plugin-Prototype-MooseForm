@@ -230,14 +230,16 @@ sub register {
       my $action = ( map{$_->{ action }} grep {ref eq "HASH" and exists $_->{action}} @_ )[ 0 ] ;
       my ($pname, $gname) = reverse grep{not ref} @_;
 
+      my $purl = $action || $url;
+
       $self->get_moose_form($url, $class, ( $gname || "moose_form" ) );
-      $self->post($url, sub{
+      $self->post($purl, sub{
          my $self = shift;
          $self->stash->{ obj } = $self->create_object($class);
-         return $self->redirect_to("") if not $self->stash->{ obj };
+         return $self->redirect_to($url) if not $self->stash->{ obj };
          $self->stash->{action} = $action;
-         $self->$code(@_) if defined $code;
-      }, $pname, grep{ref ne "CODE"} @_);
+         $self->$code($self->stash->{ obj }, @_) if defined $code;
+      } => $pname => grep{ref and ref ne "CODE"} @_);
    });
 
    *main::get_moose_form = sub{$app->routes->get_moose_form(@_)};
@@ -268,10 +270,30 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use Mojolicious::Plugin::Prototype::MooseForm;
+    package My::Class;
+    use Moose;
+    
+    has my_string               => (is => 'rw', isa => "Str",                  documentation => "This is a string and it can't be undefined.");
+    has my_number               => (is => 'rw', isa => "Num",                  documentation => "This is a number and it can't be undefined.");
+    has maybe_a_string          => (is => 'rw', isa => "Maybe[Str]",           documentation => "This is a string but can be undefined.");
+    has maybe_a_number          => (is => 'rw', isa => "Maybe[Num]",           documentation => "This is a number but can be undefined.");
+    has array_of_strings        => (is => 'rw', isa => "ArrayRef[Str]",        documentation => "This is a array of strings.");
+    has array_of_numbers        => (is => 'rw', isa => "ArrayRef[Num]",        documentation => "This is a array of numbers.");
+    
+    package main;
+    
+    use Mojolicious::Lite;
+    
+    BEGIN{ plugin "Mojolicious::Plugin::Prototype::MooseForm" }
+    
+    moose_form "/" => "My::Class" => sub {
+       my $self = shift;
+       my $obj  = shift;
 
-    my $foo = Mojolicious::Plugin::Prototype::MooseForm->new();
-    ...
+       $self->render_json($obj);
+    } => "response";
+    
+    app->start;
 
 =head1 EXPORT
 
