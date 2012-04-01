@@ -92,8 +92,8 @@ sub separate_value {
    return "none" if not defined $value;
 
    my @ret;
-   if($value =~ /^\s*(\w+)\s*\[\s*(.*?)\s*\]\s*$/) {
-      push @ret, $1, $self->separate_value( $2 );
+   if(my ($first, $second) = $value =~ /^\s*(\w+)\s*\[\s*(.*?)\s*\]\s*$/) {
+      push @ret, $first, $self->separate_value( $second );
    } else {
       push @ret, $value;
    }
