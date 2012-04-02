@@ -9,6 +9,7 @@ sub to_test_exec{"tested"}
 package app;
 use Moose;
 has last_helper => (is => 'rw');
+has classes     => (is => 'ro', isa => 'ArrayRef', default => sub{[]});
 sub helper {shift()->last_helper(shift)}
 
 package main;

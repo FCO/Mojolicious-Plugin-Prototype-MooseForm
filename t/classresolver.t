@@ -3,8 +3,10 @@ package plugin_test;
 use Moose;
 has "error"  => (is => "rw");
 has "plugin" => (is => 'rw');
-sub exec{my $self = shift; my $exec = lc shift; $self->plugin->$exec(@_)}
+sub exec{my $self = shift; my $exec = lc shift; if($self->can($exec)) {return $self->$exec(@_) } $self->plugin->$exec(@_)}
 sub can_exec{1}
+sub separate_value{shift; shift =~ /^(\w+)/g}
+sub type_reconstruct{shift; shift}
 
 package class_test;
 use Moose;
