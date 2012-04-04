@@ -1,12 +1,14 @@
 #!/usr/bin/perl 
 package bla;
 use Moose;
+use Moose::Util::TypeConstraints;
 has a => (is => 'ro', isa => "Num");
 has e => (is => 'ro', default => "Bla");
 has i => (is => 'ro', isa => "ArrayRef[Str]", documentation => "Doc for attr 'i'");
 has o => (is => 'ro', required => 1);
 has u => (is => 'ro', isa => "Maybe[Num]", documentation => "Doc for attr 'u'");
 has x => (is => 'rw', isa => "Bool");
+has y => (is => 'rw', isa => enum([qw/ la le li lo lu/]));
 
 package main;
 use Mojolicious::Lite;

@@ -20,12 +20,13 @@ sub get_class_details {
                   ? $_->default->($class)
                   : $_->default;
       {
-         title => join(" ", map{ "\u$_" } grep {defined $_} split /_+/, $_->name),
-         name  => $_->name,
-         value => $val,
-         doc   => $_->documentation,
-         type  => $_->type_constraint ? $_->type_constraint . "" : "Any",
-         req   => $_->is_required,
+         possibilities => ($_->type_constraint && $_->type_constraint->can("values") ? $_->type_constraint->values : []),
+         title         => join(" ", map{ "\u$_" } grep {defined $_} split /_+/, $_->name),
+         name          => $_->name,
+         value         => $val,
+         doc           => $_->documentation,
+         type          => $_->type_constraint ? $_->type_constraint . "" : "Any",
+         req           => $_->is_required,
       }
    } $meta->get_all_attributes
 }
