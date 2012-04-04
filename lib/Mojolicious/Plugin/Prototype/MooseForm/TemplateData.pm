@@ -10,6 +10,17 @@ __DATA__
 @@ moose_form_template_say_required_1.html.ep
 <span class=required><%= b(prototype_conf("required_symbol")) =%></span>
 
+@@ moose_form_template_change_type_bool.html.ep
+% $$required = 0;
+<input
+ type="checkbox"
+ name="<%= $attr->{name} =%>"
+ value="1"
+ <% if($attr->{value}) { %>
+    checked=1
+ <% } %>
+>
+
 @@ moose_form_template_change_type_arrayref.html.ep
 % $$required = 0;
 % my $array_req = 1;

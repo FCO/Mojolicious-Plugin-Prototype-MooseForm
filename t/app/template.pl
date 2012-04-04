@@ -6,6 +6,7 @@ has e => (is => 'ro', default => "Bla");
 has i => (is => 'ro', isa => "ArrayRef[Str]", documentation => "Doc for attr 'i'");
 has o => (is => 'ro', required => 1);
 has u => (is => 'ro', isa => "Maybe[Num]", documentation => "Doc for attr 'u'");
+has x => (is => 'rw', isa => "Bool");
 
 package main;
 use Mojolicious::Lite;

@@ -254,7 +254,7 @@ __END__
 
 =head1 NAME
 
-Mojolicious::Plugin::Prototype::MooseForm - The great new Mojolicious::Plugin::Prototype::MooseForm!
+Mojolicious::Plugin::Prototype::MooseForm - A Mojolicious Plugin to make it eazy to create Form prototype from Moose Classes.
 
 =head1 VERSION
 
@@ -279,6 +279,9 @@ Perhaps a little code snippet.
     has maybe_a_number          => (is => 'rw', isa => "Maybe[Num]",           documentation => "This is a number but can be undefined.");
     has array_of_strings        => (is => 'rw', isa => "ArrayRef[Str]",        documentation => "This is a array of strings.");
     has array_of_numbers        => (is => 'rw', isa => "ArrayRef[Num]",        documentation => "This is a array of numbers.");
+    has array_of_maybe_strings  => (is => 'rw', isa => "ArrayRef[Maybe[Str]]", documentation => "This is a array of strings.");
+    has array_of_maybe_numbers  => (is => 'rw', isa => "ArrayRef[Maybe[Num]]", documentation => "This is a array of numbers.");
+
     
     package main;
     
