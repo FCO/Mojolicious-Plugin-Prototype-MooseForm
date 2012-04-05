@@ -266,9 +266,7 @@ Version 0.01
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
+It makes fast and easy write web app prototypes.
 
     package My::Class;
     use Moose;
